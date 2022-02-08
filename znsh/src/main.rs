@@ -12,7 +12,15 @@ fn main() {
     println!("************* Welcome to znsh **************");
     // Infinite loop until exit is called
     loop {
-        print!("user@znsh:/insert/cwd/here ➜ ");
+        // Get cwd and convert to string (for header)
+        let cwd = std::env::current_dir().unwrap().as_path().display().to_string();
+        // Get username
+        let key = "USER";
+        let user = match env::var(key) {
+            Ok(val) => val,
+            Err(e) => String::from("root"),
+        };
+        print!("{}@znsh:{} ➜ ", user, cwd);
         // Take user input and write to a string line
         io::stdout().flush().unwrap();
         let mut line = String::new();
