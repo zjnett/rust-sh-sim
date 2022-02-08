@@ -33,9 +33,11 @@ fn main() {
                 // names[1] exists
                 let path = Path::new(names[1]);
                 // Check if path exists
-                if path.exists() {
+                if path.exists() && path.is_dir() {
                     env::set_current_dir(path)
                         .expect(format!("cd: could not chdir() to path {}", names[1]).as_str());
+                } else if path.exists() && !path.is_dir() {
+                    println!("cd: not a directory: {}", names[1])
                 } else {
                     println!("cd: no such file or directory: {}", names[1])
                 }
