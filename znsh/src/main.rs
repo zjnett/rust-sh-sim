@@ -13,14 +13,23 @@ fn main() {
     // Infinite loop until exit is called
     loop {
         // Get cwd and convert to string (for header)
-        let cwd = std::env::current_dir().unwrap().as_path().display().to_string();
+        let mut cwd = std::env::current_dir().unwrap().as_path().display().to_string();
+        // Convert $HOME prefix to nothing or to ~ if cwd is $HOME
+        if cwd.starts_with(home.as_path().display().to_string().as_str()) {
+            if (cwd == home.as_path().display().to_string()) {
+                cwd = "~".to_string();
+            } else {
+                cwd = cwd.trim_start_matches(&home.as_path().display().to_string()).to_string();
+                cwd = cwd.trim_start_matches("/").to_string();
+            }
+        }
         // Get username
         let key = "USER";
         let user = match env::var(key) {
             Ok(val) => val,
             Err(e) => String::from("root"),
         };
-        print!("{}@znsh:{} ➜ ", user, cwd);
+        print!("{}@znsh: {} ➜ ", user, cwd);
         // Take user input and write to a string line
         io::stdout().flush().unwrap();
         let mut line = String::new();
@@ -44,6 +53,9 @@ fn main() {
                         .expect(format!("cd: could not chdir() to path {}", names[1]).as_str());
                 } else if path.exists() && !path.is_dir() {
                     println!("cd: not a directory: {}", names[1])
+                } else if (names[1] == "~") {
+                    env::set_current_dir(home.as_path())
+                        .expect("Error: could not chdir() to HOME");
                 } else {
                     println!("cd: no such file or directory: {}", names[1])
                 }
