@@ -5,11 +5,12 @@ use std::io::Write;
 use std::env;
 use std::path::Path;
 use std::process::Command;
+use colored::*;
 
 fn main() {
     let home = dirs::home_dir().unwrap();
 
-    println!("************* Welcome to znsh **************");
+    println!("{}", "************* Welcome to znsh **************".bold());
     // Infinite loop until exit is called
     loop {
         // Get cwd and convert to string (for header)
@@ -29,7 +30,7 @@ fn main() {
             Ok(val) => val,
             Err(e) => String::from("root"),
         };
-        print!("{}@znsh: {} ➜ ", user, cwd);
+        print!("{}{}: {} {} ", user.cyan(), "@znsh".cyan(), cwd.blue(), "➜".green());
         // Take user input and write to a string line
         io::stdout().flush().unwrap();
         let mut line = String::new();
