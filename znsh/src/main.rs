@@ -1,7 +1,10 @@
+#![allow(unused)]
+
 use std::io;
 use std::io::Write;
 use std::env;
 use std::path::Path;
+use std::process::Command;
 
 fn main() {
     let home = dirs::home_dir().unwrap();
@@ -21,7 +24,7 @@ fn main() {
         println!("line = {}", line);
 
         // Tokenize line into substrings, collect iterator into a vector names
-        let names: Vec<&str> = line.split(" ").collect();
+        let mut names: Vec<&str> = line.split(" ").collect();
         println!("{}", names[0]);
 
         // Implement cd wrapper command
@@ -36,15 +39,28 @@ fn main() {
                 } else {
                     println!("cd: no such file or directory: {}", names[1])
                 }
-            }
+            } else {
             // otherwise, chdir to HOME
             env::set_current_dir(home.as_path())
                 .expect("Error: could not chdir() to HOME");
+            }
+            continue;
         }
 
         // Implement exit wrapper command
         if names[0] == "exit" {
             std::process::exit(0);
         }
+        
+        // Execute command
+        let cmd_name = names[0];
+        names.remove(0);
+        let mut child = Command::new(cmd_name)
+                                .args(names)
+                                .spawn()
+                                .expect(format!("znsh: {} failed", cmd_name).as_str());
+        
+        let parent = child.wait()
+                        .expect("failed to wait on child");
     }
 }
