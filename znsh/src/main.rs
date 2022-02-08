@@ -17,15 +17,13 @@ fn main() {
         io::stdout().flush().unwrap();
         let mut line = String::new();
         std::io::stdin().read_line(&mut line).unwrap();
-        // Convert line to lowercase for processing
-        line = line.to_lowercase();
         // Truncate newline from line
         line.truncate(line.len() - 1);
-        println!("line = {}", line);
+        // println!("line = {}", line);
 
         // Tokenize line into substrings, collect iterator into a vector names
         let mut names: Vec<&str> = line.split(" ").collect();
-        println!("{}", names[0]);
+        // println!("{}", names[0]);
 
         // Implement cd wrapper command
         if names[0] == "cd" {
